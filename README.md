@@ -17,22 +17,22 @@ Setup
 2) If config.txt is not available, the user will be asked to specify the configuration
 Optional) The user can specify a different file through parameters for example: SortVisualization.exe customConfig.txt
 
-Config.txt
-----------
-Vertical screen resolution
-Horizontal screen resolution
-Number of elements
-Copy/Assignment delay in ns
-Compare delay in ns
+- Config.txt
+- ----------
+- - Vertical screen resolution
+- - Horizontal screen resolution
+- - Number of elements
+- - Copy/Assignment delay in ns
+- - Compare delay in ns
 
-Example:
-1200
-800
-1200
-500
-250
+- - Example:
+-   - 1200
+-   - 800
+-   - 1200
+-   - 500
+-   - 250
 
-
+Usage
 
 HOTKEY|FUNCTION
 ------|-------------------------
@@ -62,8 +62,7 @@ HOTKEY|FUNCTION
   F   |std::stablesort 
   X   |reverse order
   V   |verify order
-  ----|--Threads(default 4)-----
-  B   |increase max. threads
+  B   |increase max. threads (default 4)
   N   |decrease max. threads
   
   -> If a key is pressed, sorting will stop. (std::stablesort, std::sort and heapsort can not be stopped). 
