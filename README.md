@@ -18,11 +18,13 @@ Setup
 - The user can specify a different file through parameters for example: SortVisualization.exe customConfig.txt
 
 Config.txt
-- Vertical screen resolution
-- Horizontal screen resolution
-- Number of elements
-- Copy/Assignment delay in ns
-- Compare delay in n
+----------
+1) Vertical screen resolution
+2) Horizontal screen resolution
+3) Number of elements
+4) Copy/Assignment delay in ns
+5) Compare delay in n
+
 - Example:
   - 1200
   - 800
