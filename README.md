@@ -15,25 +15,23 @@ Setup
 -----
 1) The configuration will be loaded during startup from "config.txt"
 2) If config.txt is not available, the user will be asked to specify the configuration
-Optional) The user can specify a different file through parameters for example: SortVisualization.exe customConfig.txt
+- The user can specify a different file through parameters for example: SortVisualization.exe customConfig.txt
 
-- Config.txt
-- ----------
-- - Vertical screen resolution
-- - Horizontal screen resolution
-- - Number of elements
-- - Copy/Assignment delay in ns
-- - Compare delay in ns
+Config.txt
+- Vertical screen resolution
+- Horizontal screen resolution
+- Number of elements
+- Copy/Assignment delay in ns
+- Compare delay in n
+- Example:
+  - 1200
+  - 800
+  - 1200
+  - 500
+  - 250
 
-- - Example:
--   - 1200
--   - 800
--   - 1200
--   - 500
--   - 250
-
-Usage
-
+How to use
+-----------
 HOTKEY|FUNCTION
 ------|-------------------------
   0   |random init data
