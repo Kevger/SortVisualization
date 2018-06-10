@@ -18,20 +18,21 @@ Setup
 2) If config.txt is not available, the user will be asked to specify the configuration
 - The user can specify a different file through parameters for example: SortVisualization.exe customConfig.txt
 
-Config.txt
-----------
+### Config.txt
 1) Vertical screen resolution
 2) Horizontal screen resolution
 3) Number of elements
 4) Copy/Assignment delay in ns
 5) Compare delay in n
 
-- Example:
-  - 1200
-  - 800
-  - 1200
-  - 500
-  - 250
+Example config.txt
+```
+  1200
+  800
+  1200
+  500
+  250
+```
 
 How to use
 -----------
@@ -66,7 +67,7 @@ HOTKEY|FUNCTION
   B   |increase max. threads (default 4)
   N   |decrease max. threads
   
-  -> If a key is pressed, sorting will stop. (std::stablesort, std::sort and heapsort can not be stopped). 
+ If a key is pressed, sorting will stop. (std::stablesort, std::sort and heapsort can not be stopped). 
 
 
 ![Comb sort](Screenshots/Example2.png "Comb Sort")
@@ -75,4 +76,4 @@ HOTKEY|FUNCTION
 
 ![Verification](Screenshots/Example3.png "verify order")
 
-Sorting Algorithms are used from my other Repo CPP_SortingAlgorithm_Templates
+Sorting Algorithms are used from my other Project [Repo CPP_SortingAlgorithm_Templates](https://github.com/Kevger/CPP_SortingAlgorithm_Templates)
