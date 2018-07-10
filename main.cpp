@@ -3,12 +3,13 @@
 * @author: Kevin German
 **/
 #include <SDL.h>
+#include <vector>
 #include <thread>
 #include <iostream>
 #include <fstream>
 #include "settings.h"
 #include "SortingData.h"
-#include "Sorting_Algorithm_v1.h"
+#include "sort.h"
 
 //-------Prototypes-------
 void init_settings(const int argc, char** argv);
@@ -23,7 +24,7 @@ int init_system();
 auto assignmentDelay = defaultAssignmentDelay;
 auto compareDelay = defaultCompareDelay;
 auto numberOfElements = defaultNumberOfElements;
-auto currentSortingAlgorithm = sorting::SortingAlgorithm::none;
+auto currentSortingAlgorithm = sort::SortingAlgorithm::none;
 auto isRunning = true;
 bool sortingDisabled = false;
 //------SDL variables-----
@@ -127,112 +128,120 @@ void thread_sorting(std::vector<SortingData>* data)
 {
 	while (isRunning)
 	{
-		if (currentSortingAlgorithm != sorting::SortingAlgorithm::none)
+		if (currentSortingAlgorithm != sort::SortingAlgorithm::none)
 		{
 			sortingDisabled = false;
 			//start timer here for rough measurement 
 			const auto start = std::chrono::high_resolution_clock::now();
-			switch (currentSortingAlgorithm)
+			try
 			{
-			case sorting::SortingAlgorithm::cyclesort:
-				std::cout << "Cyclesort started...\n";
-				sorting::cyclesort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::bubblesort:
-				std::cout << "Bubblesort started...\n";
-				sorting::bubblesort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::bubblesortrc:
-				std::cout << "Bubblesort recursivly started...\n";
-				sorting::bubblesort_rc(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::stdsort:
-				std::cout << "std::sort started...\n";
-				std::sort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::shellsort:
-				std::cout << "Shellsort started...\n";
-				sorting::shellsort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::combsort:
-				std::cout << "Combsort started...\n";
-				sorting::combsort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::gnomesort:
-				std::cout << "Gnomesort started...\n";
-				sorting::gnomesort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::gnomesort2:
-				std::cout << "Gnomesort2 started...\n";
-				sorting::gnomesort2(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::radixsort:
-				std::cout << "Radixsort started...\n";
-				sorting::radixsort(data->begin(), data->end(), 13);
-				break;
-			case sorting::SortingAlgorithm::radixsortslow:
-				std::cout << "Slow radixsort started...\n";
-				sorting::radixsort_slow(data->begin(), data->end(), 13);
-				break;
-			case sorting::SortingAlgorithm::radixsortipis:
-				std::cout << "Inplace Radixsort with insertionsort started...\n";
-				sorting::radixsort_ip_is(data->begin(), data->end(), 13, std::less<>(), maxThreads);
-				break;
-			case sorting::SortingAlgorithm::insertionsort:
-				std::cout << "Insertionsort started...\n";
-				sorting::insertionsort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::insertionsortbinsearch:
-				std::cout << "Insertionsort with binary search started...\n";
-				sorting::insertionsort_binsearch(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::selectionsort:
-				std::cout << "Selectionsort started...\n";
-				sorting::selectionsort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::bogosort:
-				std::cout << "Bogosort started...\n";
-				sorting::bogosort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::bozosort:
-				std::cout << "Bozosort started...\n";
-				sorting::bozosort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::oddevensort:
-				std::cout << "Odd-even-sort started...\n";
-				sorting::odd_even_sort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::shakersort:
-				std::cout << "Shakersort started...\n";
-				sorting::shakersort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::quicksort:
-				std::cout << "Quicksort started...\n";
-				sorting::quicksort(data->begin(), data->end(), std::less<>(), maxThreads);
-				break;
-			case sorting::SortingAlgorithm::mergesort:
-				std::cout << "Mergesort started...\n";
-				sorting::mergesort(data->begin(), data->end(), std::less<>(), maxThreads);
-				break;
-			case sorting::SortingAlgorithm::heapsort:
-				std::cout << "Heapsort started...\n";
-				sorting::heapsort(data->begin(), data->end());
-				break;
-			case sorting::SortingAlgorithm::introsort:
-				std::cout << "Introsort started...\n";
-				sorting::introsort(data->begin(), data->end(), std::less<>(), maxThreads);
-				break;
-			case sorting::SortingAlgorithm::stdstablesort:
-				std::cout << "std::stablesort started...\n";
-				std::stable_sort(data->begin(), data->end());
-				break;
-			default:
-				break;
+				switch (currentSortingAlgorithm)
+				{
+				case sort::SortingAlgorithm::cyclesort:
+					std::cout << "Cyclesort started...\n";
+					sort::cyclesort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::bubblesort:
+					std::cout << "Bubblesort started...\n";
+					sort::bubblesort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::bubblesortrc:
+					std::cout << "Bubblesort recursivly started...\n";
+					sort::bubblesort_rc(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::stdsort:
+					std::cout << "std::sort started...\n";
+					std::sort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::shellsort:
+					std::cout << "Shellsort started...\n";
+					sort::shellsort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::combsort:
+					std::cout << "Combsort started...\n";
+					sort::combsort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::gnomesort:
+					std::cout << "Gnomesort started...\n";
+					sort::gnomesort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::gnomesort2:
+					std::cout << "Gnomesort2 started...\n";
+					sort::gnomesort2(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::radixsort:
+					std::cout << "Radixsort started...\n";
+					sort::radixsort(data->begin(), data->end(), 13);
+					break;
+				case sort::SortingAlgorithm::radixsortslow:
+					std::cout << "Slow radixsort started...\n";
+					sort::radixsort_slow(data->begin(), data->end(), 13);
+					break;
+				case sort::SortingAlgorithm::radixsortipis:
+					std::cout << "Inplace Radixsort with insertionsort started...\n";
+					sort::radixsort_ip_is(data->begin(), data->end(), 13, std::less<>(), maxThreads);
+					break;
+				case sort::SortingAlgorithm::insertionsort:
+					std::cout << "Insertionsort started...\n";
+					sort::insertionsort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::insertionsortbinsearch:
+					std::cout << "Insertionsort with binary search started...\n";
+					sort::insertionsort_binsearch(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::selectionsort:
+					std::cout << "Selectionsort started...\n";
+					sort::selectionsort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::bogosort:
+					std::cout << "Bogosort started...\n";
+					sort::bogosort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::bozosort:
+					std::cout << "Bozosort started...\n";
+					sort::bozosort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::oddevensort:
+					std::cout << "Odd-even-sort started...\n";
+					sort::odd_even_sort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::shakersort:
+					std::cout << "Shakersort started...\n";
+					sort::shakersort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::quicksort:
+					std::cout << "Quicksort started...\n";
+					sort::quicksort(data->begin(), data->end(), std::less<>(), maxThreads);
+					break;
+				case sort::SortingAlgorithm::mergesort:
+					std::cout << "Mergesort started...\n";
+					sort::mergesort(data->begin(), data->end(), std::less<>(), maxThreads);
+					break;
+				case sort::SortingAlgorithm::heapsort:
+					std::cout << "Heapsort started...\n";
+					sort::heapsort(data->begin(), data->end());
+					break;
+				case sort::SortingAlgorithm::introsort:
+					std::cout << "Introsort started...\n";
+					sort::introsort(data->begin(), data->end(), std::less<>(), maxThreads);
+					break;
+				case sort::SortingAlgorithm::stdstablesort:
+					std::cout << "std::stablesort started...\n";
+					std::stable_sort(data->begin(), data->end());
+					break;
+				default:
+					break;
+				}
+				std::cout << "Sort finished. ";
+			} 
+			catch (std::exception & e)
+			{
+				std::cout << e.what();	//user input will interrupt the sorting process
 			}
 			const std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - start;
-			currentSortingAlgorithm = sorting::SortingAlgorithm::none;
+			currentSortingAlgorithm = sort::SortingAlgorithm::none;
 			sortingDisabled = false;
-			std::cout << "Sort finished! Elapsed Time:\t" << elapsed.count() << " s\n";
+			std::cout << "Elapsed Time:\t" << elapsed.count() << " s\n";
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
@@ -265,76 +274,76 @@ void keyboard_event(const SDL_KeyboardEvent* type, std::vector<SortingData>& dat
 		init_data(data);
 		break;
 	case SDLK_1:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::stdsort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::stdsort;
 		break;
 	case SDLK_2:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::bubblesort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::bubblesort;
 		break;
 	case SDLK_3:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::bubblesortrc;
+		currentSortingAlgorithm = sort::SortingAlgorithm::bubblesortrc;
 		break;
 	case SDLK_4:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::insertionsort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::insertionsort;
 		break;
 	case SDLK_5:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::insertionsortbinsearch;
+		currentSortingAlgorithm = sort::SortingAlgorithm::insertionsortbinsearch;
 		break;
 	case SDLK_6:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::selectionsort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::selectionsort;
 		break;
 	case SDLK_7:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::gnomesort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::gnomesort;
 		break;
 	case SDLK_8:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::gnomesort2;
+		currentSortingAlgorithm = sort::SortingAlgorithm::gnomesort2;
 		break;
 	case SDLK_9:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::cyclesort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::cyclesort;
 		break;
 	case SDLK_q:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::shellsort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::shellsort;
 		break;
 	case SDLK_w:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::combsort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::combsort;
 		break;
 	case SDLK_e:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::oddevensort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::oddevensort;
 		break;
 	case SDLK_r:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::shakersort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::shakersort;
 		break;
 	case SDLK_t:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::radixsort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::radixsort;
 		break;
 	case SDLK_z:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::radixsortslow;
+		currentSortingAlgorithm = sort::SortingAlgorithm::radixsortslow;
 		break;
 	case SDLK_u:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::radixsortipis;
+		currentSortingAlgorithm = sort::SortingAlgorithm::radixsortipis;
 		break;
 	case SDLK_i:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::bogosort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::bogosort;
 		break;
 	case SDLK_o:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::bozosort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::bozosort;
 		break;
 	case SDLK_p:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::quicksort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::quicksort;
 		break;
 	case SDLK_a:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::mergesort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::mergesort;
 		break;
 	case SDLK_s:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::heapsort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::heapsort;
 		break;
 	case SDLK_d:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::introsort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::introsort;
 		break;
 	case SDLK_f:
-		currentSortingAlgorithm = sorting::SortingAlgorithm::stdstablesort;
+		currentSortingAlgorithm = sort::SortingAlgorithm::stdstablesort;
 		break;
 	case SDLK_x: //inverse order
-		sorting::inverse_order(data.begin(), data.end());
+		sort::inverse_order(data.begin(), data.end());
 		std::cout << "Order inversed!\n";
 		break;
 	case SDLK_v:
@@ -343,7 +352,7 @@ void keyboard_event(const SDL_KeyboardEvent* type, std::vector<SortingData>& dat
 		for (auto& i : data)
 			i.enableVerification(true);
 
-		if (sorting::verifiy_sort_order(data.begin(), data.end()))
+		if (sort::verifiy_sort_order(data.begin(), data.end()))
 			std::cout << "Sorted!\n";
 		else
 			std::cout << "Not sorted\n";
@@ -397,7 +406,7 @@ void close_system()
 
 void init_settings(const int argc, char** argv)
 {
-	std::cout << "Kevin German C++ with STL\n\n";
+	std::cout << "SortVisualization by Kevin German\n\n";
 
 	auto loadFromFile = false;
 	std::ifstream file;
@@ -544,10 +553,10 @@ void print_controls()
 		<< "I|bogosort\n"
 		<< "O|bozosort\n"
 		<< "P|quicksort (optional parallel)\n"
-		<< "A|mergesort (optional parallel) (unstoppable)\n"
-		<< "S|heapsort (unstoppable)\n"
+		<< "A|mergesort (optional parallel)\n"
+		<< "S|heapsort\n"
 		<< "D|introsort (optional parallel)\n"
-		<< "F|std::stablesort (unstoppable)\n"
+		<< "F|std::stablesort\n"
 		<< "X|reverse order\n"
 		<< "V|verify order\n"
 		<< "----Threads(default " << defaultMaxThreads << ")----\n"

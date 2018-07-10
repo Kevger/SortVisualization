@@ -9,12 +9,11 @@
 
 class SortingData
 {
-private:
 	mutable std::mutex mMutex;	//mutex for protecting the internal data from race conditions
 	std::chrono::nanoseconds mAssignmentDelay{ defaultAssignmentDelay }; //artificial delay for assignments
 	std::chrono::nanoseconds mCompareDelay{ defaultCompareDelay };	//artificial delay for comparisons
-	bool mAssigned{ false }; //true if recently assigned
-	bool mCompared{false};	//true if recently compared
+	bool mRecentlyAssigned{ false }; //true if recently assigned
+	mutable bool mRecentlyCompared{false};	//true if recently compared
 	bool mVerificationEnabled{ false }; //used for visualizing the verification process
 public:
 	int mKey{0};//key used for comparisons
@@ -61,7 +60,7 @@ public:
 	* @param other: int used for bitwise operation
 	* @return int mKey & other
 	**/
-	int operator&(const int other) const;
+	int operator&(int other) const;
 
 	/**
 	* @brief assignment operator '=' with artificial delay(mAssignmentDelay)
@@ -71,7 +70,7 @@ public:
 	SortingData& operator=(const SortingData & other);
 
 	/**
-	* @brief move assignment operator '=' with artificial delay(mAssignmentDelay)
+	* @brief move assignment operator '=' without artificial delay(mAssignmentDelay)
 	* @param other SortingData rvalue
 	* @return reference to this object
 	**/
@@ -100,7 +99,7 @@ public:
 	* Resets assigned and compare flag as well and increases the time needed for comparisons (looks better in visualization process)
 	* @return void
 	**/
-	void enableVerification(const bool enable);
+	void enableVerification(bool enable);
 
 	/**
 	* @brief check if verification mode is enabled
@@ -113,5 +112,5 @@ public:
 	* @param compareDelay: std::chrono::nanoseconds. Sets minimum time needed for comparisions to this value
 	* @param assignmentDelay: std::chrono::nanoseconds. Sets minimum time needed for assignments to this value
 	**/
-	void setDelay(const std::chrono::nanoseconds compareDelay, const  std::chrono::nanoseconds assignmentDelay);
+	void setDelay(std::chrono::nanoseconds compareDelay, std::chrono::nanoseconds assignmentDelay);
 };

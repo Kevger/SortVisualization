@@ -3,9 +3,13 @@
 * @author: Kevin German
 **/
 #include "SortingData.h"
+#include "sort.h"
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <exception>
+
+extern bool sortingDisabled;	//used for stopping sorting algorithms immediately (in case of a user event)
 
 void SortingData::setDelay(const std::chrono::nanoseconds compareDelay,const std::chrono::nanoseconds assignmentDelay)
 {
@@ -14,18 +18,19 @@ void SortingData::setDelay(const std::chrono::nanoseconds compareDelay,const std
 }
 
 SortingData::SortingData(SortingData&& other) noexcept
-	: mAssignmentDelay(other.mAssignmentDelay),mCompareDelay(other.mCompareDelay), mAssigned(true), mKey(other.mKey)
+	: mAssignmentDelay(other.mAssignmentDelay),mCompareDelay(other.mCompareDelay), mRecentlyAssigned(true), mKey(other.mKey)
 {
-	other.mAssigned = false;
+	other.mRecentlyAssigned = false;
 	other.mKey = 0;
-	other.mCompared = false;
+	other.mRecentlyCompared = false;
 }
 
 SortingData::SortingData(const SortingData& other)
-	: mAssignmentDelay(other.mAssignmentDelay), mCompareDelay(other.mCompareDelay), mAssigned(true), mKey(other.mKey)
+	: mAssignmentDelay(other.mAssignmentDelay), mCompareDelay(other.mCompareDelay), mRecentlyAssigned(true), mKey(other.mKey)
 {
-	std::lock_guard<std::mutex> lock(mMutex);
-	std::lock_guard<std::mutex> lockOther(other.mMutex);	
+	std::lock(mMutex, other.mMutex);
+	std::lock_guard<std::mutex> lock(mMutex,std::adopt_lock);
+	std::lock_guard<std::mutex> lockOther(other.mMutex,std::adopt_lock);	
 	std::this_thread::sleep_for(mAssignmentDelay); //delay to simulate heavy copy work
 }
 
@@ -33,25 +38,26 @@ SortingData::SortingData(const SortingData& other)
 bool SortingData::operator<(const SortingData& other) const
 {
 	{
-		std::lock_guard<std::mutex> lockThis(mMutex);
-		std::lock_guard<std::mutex> lockOther(other.mMutex);
+		std::lock(mMutex, other.mMutex);
+		std::lock_guard<std::mutex> lock(mMutex, std::adopt_lock);
+		std::lock_guard<std::mutex> lockOther(other.mMutex, std::adopt_lock);
 		if (mVerificationEnabled)
 		{
 			if (mKey < other.mKey)
 			{
-				const_cast<SortingData*>(this)->mCompared = false;
-				const_cast<SortingData*> (&other)->mCompared = false;
+				mRecentlyCompared = false;
+				other.mRecentlyCompared = false;
 			}
 			else
 			{
-				const_cast<SortingData*>(this)->mCompared = true;
-				const_cast<SortingData*> (&other)->mCompared = true;
+				mRecentlyCompared = true;
+				other.mRecentlyCompared = true;
 			}
 		}
 		else
 		{
-			const_cast<SortingData*>(this)->mCompared = true;
-			const_cast<SortingData*> (&other)->mCompared = true;
+			mRecentlyCompared = true;
+			other.mRecentlyCompared = true;
 		}
 	}
 	std::this_thread::sleep_for(mCompareDelay);//delay to simulate heavy comparison work
@@ -68,12 +74,16 @@ int SortingData::operator&(const int other) const
 
 SortingData& SortingData::operator=(const SortingData &other)
 {
+	if (sortingDisabled)
+		throw std::exception("Sort interrupted by user input. ");
+
 	if (this != &other)
 	{
 		{
-			std::unique_lock<std::mutex> lockThis(mMutex);
-			std::unique_lock<std::mutex> lockOther(other.mMutex);
-			mAssigned = true;
+			std::lock(mMutex, other.mMutex);
+			std::lock_guard<std::mutex> lock(mMutex, std::adopt_lock);
+			std::lock_guard<std::mutex> lockOther(other.mMutex, std::adopt_lock);
+			mRecentlyAssigned = true;
 			mKey = other.mKey;
 		}
 		std::this_thread::sleep_for(mAssignmentDelay);	//delay to simulate heavy copy work
@@ -83,10 +93,13 @@ SortingData& SortingData::operator=(const SortingData &other)
 
 SortingData& SortingData::operator=(SortingData&& other)
 {
+	if (sortingDisabled)
+		throw std::exception("Sort interrupted by user input. ");
+
 	{	
-		std::unique_lock<std::mutex> lockThis(mMutex);
+		std::lock_guard<std::mutex> lockThis(mMutex);
 		mKey = other.mKey;
-		mAssigned = true;
+		mRecentlyAssigned = true;
 	}
 	return *this;
 }
@@ -103,9 +116,9 @@ SortingData& SortingData::operator++()
 bool SortingData::compared()
 {
 	std::lock_guard<std::mutex> lock(mMutex);
-	const auto tmpCompared = mCompared;
+	const auto tmpCompared = mRecentlyCompared;
 	if (!mVerificationEnabled)
-		mCompared = false;
+		mRecentlyCompared = false;
 	return tmpCompared;
 }
 
@@ -113,8 +126,8 @@ bool SortingData::compared()
 bool SortingData::assigned()
 {
 	std::lock_guard<std::mutex> lock(mMutex);
-	const auto tmpAssigned = mAssigned;
-	mAssigned = false;
+	const auto tmpAssigned = mRecentlyAssigned;
+	mRecentlyAssigned = false;
 	return tmpAssigned;
 }
 
@@ -122,11 +135,11 @@ bool SortingData::assigned()
 void SortingData::enableVerification(const bool enable)
 {
 	std::lock_guard<std::mutex> lock(mMutex);
-	mAssigned = false;
-	mCompared = false;
+	mRecentlyAssigned = false;
+	mRecentlyCompared = false;
 	if (enable)
 	{
-		mCompareDelay = mCompareDelay*5;
+		mCompareDelay = mCompareDelay*timeForVerification;
 	}
 	mVerificationEnabled = enable;
 }
