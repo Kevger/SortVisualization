@@ -67,7 +67,7 @@ HOTKEY|FUNCTION
   B   |increase max. threads (default 4)
   N   |decrease max. threads
   
- If a key is pressed, sorting will stop. (std::stablesort, std::sort and heapsort can not be stopped). 
+ If a key is pressed, sorting will stop.
 
 
 ![Comb sort](Screenshots/Example2.png "Comb Sort")
